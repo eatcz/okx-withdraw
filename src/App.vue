@@ -239,6 +239,9 @@ const startWithDraw = async () => {
       .user_balances {
         margin: 20px 0;
       }
+     @media (max-width: 848px) {
+        max-width: 420px;
+      }
     }
   }
 }
