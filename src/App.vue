@@ -159,9 +159,7 @@ const startWithDraw = async () => {
     const format = addressLists.value[i].split(',')
     const [address,  amt] = format
 
-    const current = fee.filter(item => {
-      console.log(currentChain.value);
-      
+    const current = fee.filter(item => {      
       if (item.chain == currentChain.value) {
         return item
       }
@@ -261,6 +259,7 @@ const startWithDraw = async () => {
 
           <el-input v-model="addresses" style="margin-top: 20px;" type="textarea"
             placeholder="格式:地址,数量,例:0x1111111111111111,1" @change="change" />
+           <el-tag type="primaary">共{{ addressLists.length }}个地址</el-tag>
           <footer><el-button type="primary" style="margin-top: 20px;" @click="startWithDraw">开始提币</el-button></footer>
         </div>
       </div>
