@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import CryptoJS from "crypto-js";
 import { ElMessage } from 'element-plus'
 // 获取系统时间
@@ -23,9 +23,9 @@ const formRef = ref()
 
 const infoData = reactive(
   {
-    apiKey: '',
-    secretKey: '',
-    passPhrase: '',
+    apiKey: '41040674-2468-4fc8-844f-654a5c5b8c6a',
+    secretKey: '26BC1976D6A7F4A46BC09E95C181896C',
+    passPhrase: 'Cy19960203@',
   }
 )
 
@@ -97,9 +97,40 @@ const coins = reactive([
     label: 'MATIC',
     value: 'MATIC'
   },
+  {
+    label: 'BNB',
+    value: 'BNB'
+  },
 ])
 
 const currentCoin = ref('BTC')
+const currentChain = ref('BTC-Bitcoin')
+
+// 初始化币种网络
+onMounted(async () => {
+  await getCoinChain()
+})
+
+// 获取当前币种支持的网络
+
+const coinChains = ref([])
+
+const getCoinChain = async (coin = 'BTC') => {
+  const { apiKey, secretKey, passPhrase } = infoData
+  try {
+    const ts = await getSystemTime()
+    const { code, data } = await currentFee(ts, coin, apiKey, secretKey, passPhrase)
+    if (code == '0') {
+      coinChains.value = data
+      currentChain.value = data[0].chain
+    }
+
+  } catch (err) {
+    console.log(err);
+
+  }
+
+}
 
 // 提币地址列表
 const addresses = ref('')
@@ -117,7 +148,7 @@ const startWithDraw = async () => {
   const { apiKey, secretKey, passPhrase } = infoData
   const fee = await getCurrentFee(currentCoin.value, apiKey, secretKey, passPhrase)
   if (addressLists.value == []) return
-  for (let i = 0; i < addressLists.value.length; i++) {  
+  for (let i = 0; i < addressLists.value.length; i++) {
     const format = addressLists.value[i].split(',')
     const [address, chain, amt] = format
 
@@ -126,6 +157,16 @@ const startWithDraw = async () => {
         return item
       }
     })
+    // console.log(current);
+
+    if (current.length === 0) {
+      ElMessage({
+        message: '请检查提币币种与所选币种是否一致',
+        type: 'warning',
+      })
+      return
+    }
+
 
     const data = {
       ccy: currentCoin.value,
@@ -133,7 +174,7 @@ const startWithDraw = async () => {
       dest: 4,
       toAddr: address,
       fee: current[0].maxFee,
-      chain
+      chain: currentChain.value
     }
 
     try {
@@ -153,7 +194,7 @@ const startWithDraw = async () => {
       await sleep(1500)
 
     } catch (err) {
-        ElMessage({
+      ElMessage({
         message: err.response.data.msg,
         type: 'error',
       })
@@ -171,8 +212,7 @@ const startWithDraw = async () => {
     <!-- <header>header</header> -->
     <main>
       <div class="card">
-        <el-form ref="formRef" :model="infoData" :rules="rules" label-width="120px" class="demo-ruleForm" :size="formSize"
-          status-icon>
+        <el-form ref="formRef" :model="infoData" :rules="rules" label-width="120px" class="demo-ruleForm" status-icon>
           <el-form-item label="apiKey" prop="apiKey">
             <el-input v-model="infoData.apiKey" />
           </el-form-item>
@@ -182,12 +222,12 @@ const startWithDraw = async () => {
           <el-form-item label="passPhrase" prop="passPhrase">
             <el-input v-model="infoData.passPhrase" type="password" />
           </el-form-item>
-          <el-form-item >
-           <div class="get">
-             <el-button type="primary" @click="getBalance(infoData)">
-              获取资产
-            </el-button>
-           </div>
+          <el-form-item>
+            <div class="get">
+              <el-button type="primary" @click="getBalance(infoData)">
+                获取资产
+              </el-button>
+            </div>
           </el-form-item>
         </el-form>
         <div class="user_balances">
@@ -200,8 +240,14 @@ const startWithDraw = async () => {
         <div class="withdraw">
 
           <!-- 选择币种 -->
-          <el-select v-model="currentCoin" class="m-2" placeholder="Select" size="primary" style="width: 240px">
+          <el-select v-model="currentCoin" class="m-2" placeholder="Select" size="default" style="width: 240px"
+            @change="getCoinChain">
             <el-option v-for="item in coins" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+          <!-- 选择网络 -->
+          <el-select v-model="currentChain" class="m-2" placeholder="Select" size="default" style="width: 240px"
+            @change="getCoinChain">
+            <el-option v-for="item in coinChains" :key="item.chain" :label="item.chain" :value="item.chain" />
           </el-select>
 
           <el-input v-model="addresses" style="margin-top: 20px;" type="textarea"
@@ -214,12 +260,13 @@ const startWithDraw = async () => {
 </template>
 
 <style lang="scss">
-#app{
+#app {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
 }
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -239,20 +286,21 @@ const startWithDraw = async () => {
       .user_balances {
         margin: 20px 0;
       }
-     @media (max-width: 848px) {
+
+      @media (max-width: 848px) {
         max-width: 420px;
       }
     }
   }
 }
 
-.get{
+.get {
   display: flex;
   width: 100%;
   justify-content: center;
 }
 
-footer{
+footer {
   display: flex;
   justify-content: center;
 }
@@ -263,7 +311,7 @@ footer{
   min-height: 220px !important;
 }
 
-:deep().el-form-item__content{
+:deep().el-form-item__content {
   margin-left: 0 !important;
 }
 </style>
