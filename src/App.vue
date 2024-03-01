@@ -107,9 +107,9 @@ const currentCoin = ref('BTC')
 const currentChain = ref('BTC-Bitcoin')
 
 // 初始化币种网络
-onMounted(async () => {
-  await getCoinChain()
-})
+// onMounted(async () => {
+//   await getCoinChain()
+// })
 
 // 获取当前币种支持的网络
 
@@ -119,11 +119,18 @@ const getCoinChain = async (coin = 'BTC') => {
   const { apiKey, secretKey, passPhrase } = infoData
   try {
     const ts = await getSystemTime()
-    const { code, data } = await currentFee(ts, coin, apiKey, secretKey, passPhrase)
+    console.log(coin);
+    
+    const {code , data} = await currentFee(ts, coin, apiKey, secretKey, passPhrase)
     if (code == '0') {
+      console.log(data);
+      
       coinChains.value = data
       currentChain.value = data[0].chain
+      console.log(data);
+
     }
+    
 
   } catch (err) {
     console.log(err);
@@ -150,10 +157,12 @@ const startWithDraw = async () => {
   if (addressLists.value == []) return
   for (let i = 0; i < addressLists.value.length; i++) {
     const format = addressLists.value[i].split(',')
-    const [address, chain, amt] = format
+    const [address,  amt] = format
 
     const current = fee.filter(item => {
-      if (item.chain == chain) {
+      console.log(currentChain.value);
+      
+      if (item.chain == currentChain.value) {
         return item
       }
     })
@@ -182,7 +191,7 @@ const startWithDraw = async () => {
       const { code, msg } = await withdraw(ts, data, apiKey, secretKey, passPhrase)
       if (code == '0') {
         ElMessage({
-          message: msg,
+          message: '提币申请已提交',
           type: 'success',
         })
       } else {
@@ -246,7 +255,7 @@ const startWithDraw = async () => {
           </el-select>
           <!-- 选择网络 -->
           <el-select v-model="currentChain" class="m-2" placeholder="Select" size="default" style="width: 240px"
-            @change="getCoinChain">
+            >
             <el-option v-for="item in coinChains" :key="item.chain" :label="item.chain" :value="item.chain" />
           </el-select>
 
