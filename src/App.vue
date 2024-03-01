@@ -23,9 +23,9 @@ const formRef = ref()
 
 const infoData = reactive(
   {
-    apiKey: '41040674-2468-4fc8-844f-654a5c5b8c6a',
-    secretKey: '26BC1976D6A7F4A46BC09E95C181896C',
-    passPhrase: 'Cy19960203@',
+    apiKey: '',
+    secretKey: '',
+    passPhrase: '',
   }
 )
 
