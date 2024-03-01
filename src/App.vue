@@ -180,7 +180,7 @@ const startWithDraw = async () => {
             <el-input v-model="infoData.secretKey" />
           </el-form-item>
           <el-form-item label="passPhrase" prop="passPhrase">
-            <el-input v-model="infoData.passPhrase" />
+            <el-input v-model="infoData.passPhrase" type="password" />
           </el-form-item>
           <el-form-item >
            <div class="get">
