@@ -260,7 +260,7 @@ const startWithDraw = async () => {
           </el-select>
 
           <el-input v-model="addresses" style="margin-top: 20px;" type="textarea"
-            placeholder="格式:地址,网络,数量,例:0x1111,ETH-ERC20,1" @change="change" />
+            placeholder="格式:地址,数量,例:0x1111111111111111,1" @change="change" />
           <footer><el-button type="primary" style="margin-top: 20px;" @click="startWithDraw">开始提币</el-button></footer>
         </div>
       </div>
