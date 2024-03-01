@@ -257,7 +257,7 @@ footer{
 
 <style scoped>
 :deep().el-textarea__inner {
-  min-height: 300px !important;
+  min-height: 220px !important;
 }
 
 :deep().el-form-item__content{
