@@ -165,10 +165,16 @@ const startWithDraw = async () => {
       }
     })
     // console.log(current);
-
     if (current.length === 0) {
       ElMessage({
         message: '请检查提币币种与所选币种是否一致',
+        type: 'warning',
+      })
+      return
+    }
+    if (apiKey== ''|| secretKey == '' || passPhrase == '') {
+      ElMessage({
+        message: 'apiKey, secretKey, passPhrase 不能为空',
         type: 'warning',
       })
       return
