@@ -101,6 +101,10 @@ const coins = reactive([
     label: 'BNB',
     value: 'BNB'
   },
+  {
+    label: 'G',
+    value: 'G'
+  },
 ])
 
 const currentCoin = ref('BTC')
@@ -120,17 +124,17 @@ const getCoinChain = async (coin = 'BTC') => {
   try {
     const ts = await getSystemTime()
     console.log(coin);
-    
-    const {code , data} = await currentFee(ts, coin, apiKey, secretKey, passPhrase)
+
+    const { code, data } = await currentFee(ts, coin, apiKey, secretKey, passPhrase)
     if (code == '0') {
       console.log(data);
-      
+
       coinChains.value = data
       currentChain.value = data[0].chain
       console.log(data);
 
     }
-    
+
 
   } catch (err) {
     console.log(err);
@@ -157,9 +161,9 @@ const startWithDraw = async () => {
   if (addressLists.value == []) return
   for (let i = 0; i < addressLists.value.length; i++) {
     const format = addressLists.value[i].split(',')
-    const [address,  amt] = format
+    const [address, amt] = format
 
-    const current = fee.filter(item => {      
+    const current = fee.filter(item => {
       if (item.chain == currentChain.value) {
         return item
       }
@@ -172,7 +176,7 @@ const startWithDraw = async () => {
       })
       return
     }
-    if (apiKey== ''|| secretKey == '' || passPhrase == '') {
+    if (apiKey == '' || secretKey == '' || passPhrase == '') {
       ElMessage({
         message: 'apiKey, secretKey, passPhrase 不能为空',
         type: 'warning',
@@ -258,14 +262,13 @@ const startWithDraw = async () => {
             <el-option v-for="item in coins" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
           <!-- 选择网络 -->
-          <el-select v-model="currentChain" class="m-2" placeholder="Select" size="default" style="width: 240px"
-            >
+          <el-select v-model="currentChain" class="m-2" placeholder="Select" size="default" style="width: 240px">
             <el-option v-for="item in coinChains" :key="item.chain" :label="item.chain" :value="item.chain" />
           </el-select>
 
           <el-input v-model="addresses" style="margin-top: 20px;" type="textarea"
             placeholder="格式:地址,数量,例:0x1111111111111111,1" @change="change" />
-           <el-tag type="primaary">共{{ addressLists.length }}个地址</el-tag>
+          <el-tag type="primaary">共{{ addressLists.length }}个地址</el-tag>
           <footer><el-button type="primary" style="margin-top: 20px;" @click="startWithDraw">开始提币</el-button></footer>
         </div>
       </div>
