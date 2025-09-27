@@ -248,7 +248,7 @@ const startWithDraw = async () => {
           </el-form-item>
         </el-form>
         <div class="user_balances">
-          <el-table :data="userCoins" border style="width: 100%">
+          <el-table :data="userCoins" border style="width: 100%" height max-height="250">
             <el-table-column prop="ccy" label="币种" />
             <el-table-column prop="availBal" label="数量" />
           </el-table>
